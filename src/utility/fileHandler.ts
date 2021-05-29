@@ -2,7 +2,6 @@ const fs = require("fs");
 const {join, sep} = require("path");
 import * as vscode from "vscode";
 
-
 class FileHandler {
   
   static openFile(path: string, options?: any) {

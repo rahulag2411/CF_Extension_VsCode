@@ -32,8 +32,8 @@ export function getCookie() {
     return data.cookie;
 }
 
-export function resetCookie() {
-    data.cookie = null;
+export function setCookie(temp:any){
+    data.cookie=temp;
 }
 
 export function getCsrfToken() {

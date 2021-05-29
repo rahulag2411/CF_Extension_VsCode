@@ -15,7 +15,8 @@
 		"onCommand:cfExtension.logout",
 		"onCommand:cfExtension.fetchProblem",
 		"onCommand:cfExtension.fetchContest",
-		"onCommand:cfExtension.showproblem"
+		"onCommand:cfExtension.showproblem",
+		"onCommand:cfExtension.submitproblem"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -24,6 +25,11 @@
 				{
 					"when": "resourceScheme == file && resourceExtname == .cpp",
 					"command": "cfExtension.showproblem",
+					"group": "navigation"
+				},
+				{
+					"when": "resourceScheme == file && resourceExtname == .cpp",
+					"command": "cfExtension.submitproblem",
 					"group": "navigation"
 				}
 			]
@@ -52,6 +58,10 @@
 			{
 				"command": "cfExtension.showproblem",
 				"title": "Show Problem"
+			},
+			{
+				"command": "cfExtension.submitproblem",
+				"title": "Submit Problem"
 			}
 		]
 	},
@@ -79,6 +89,7 @@
 	"dependencies": {
 		"axios": "^0.21.1",
 		"cheerio": "^1.0.0-rc.9",
+		"form-data": "^4.0.0",
 		"path": "^0.12.7",
 		"puppeteer": "^9.1.1",
 		"querystring": "^0.2.1"

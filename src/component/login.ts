@@ -2,13 +2,15 @@ import * as vscode from 'vscode';
 import { updateLoginStatus,updateLogoutStatus} from '../utility/setStatusBar';
 import { getData, getUserHandle, updateData, getUserPassword} from '../utility/data';
 import { data } from 'cheerio/lib/api/attributes';
-
-const axios = require("axios");
+import axios, { AxiosRequestConfig } from "axios";
+import { config } from 'process';
+// const axios = require("axios");
 const cheerio = require("cheerio");
 const qs = require("querystring");
 
 const baseUrl = "https://codeforces.com";
 
+const instance = axios.create({ baseURL: "https://codeforces.com" });
 
 let session = {
   csrfToken: "",
@@ -57,8 +59,9 @@ async function login() {
         data.lastUpdate = Date.now();
         console.log("Time: "+data.lastUpdate);
         updateData(data);
-
+          
         return data.cookie;
+
       });
   }
   else {

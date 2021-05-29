@@ -7,9 +7,10 @@ import { Puppet } from './utility/extractProblemData';
 import { CodeforcesDataProvider } from './component/showProblem';
 import { Explorer } from './component/explorer';
 import { createContestFolders } from './utility/createContestFolder';
+import { submitSolution } from './utility/submit';
+import { createProblemFolder } from './utility/createProblemFolder';
 
 export function activate(context: vscode.ExtensionContext) {
-
 
 	console.log('Congratulations, your extension "cfExtension" is now active!');
 	let disposable = vscode.commands.registerCommand('cfExtension.helloWorld', () => {
@@ -58,9 +59,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 				context.globalState.update("userHandle", userHandle);
 				context.globalState.update("password", password);
-
-				const logged = await login();
-				console.log(logged);
+                 var temp = "";
+				const logged = await login().then((cookie) =>{
+					temp = cookie;
+					return cookie;
+				});
+				console.log(temp);
+				console.log(data.getCookie())
 				console.log("CSRF Token: " + data.getCsrfToken());
 				if (!logged) {
 					vscode.window.showErrorMessage(
@@ -68,9 +73,9 @@ export function activate(context: vscode.ExtensionContext) {
 					);
 					return;
 				}
-
+				data.setCookie(temp);
 				data.setUser(userHandle, password);
-				data.resetCookie();
+				// data.resetCookie();
 
 			});
 		}
@@ -111,6 +116,35 @@ export function activate(context: vscode.ExtensionContext) {
 							: "problem link can not be empty";
 					},
 				}).then(async (problemLink) => {
+					var indexOfContest = problemLink?.indexOf("contest")
+					// console.log("indexOFcontest"+indexOfContest);
+					var splitted = problemLink?.split("/");
+					// console.log(splitted);
+					var problemCode="";
+					var contestCode="";
+					if (splitted) {
+						problemCode = splitted[splitted?.length - 1];
+						if (indexOfContest===-1) {
+							contestCode = splitted[splitted.length - 2];
+						} else {
+							contestCode = splitted[splitted.length - 3];
+						}
+					}
+					console.log("problemCode-->"+problemCode);
+					console.log("contestCode-->"+contestCode);
+					const id = Number(contestCode);
+					const currcontest = new Explorer(
+						`${contestCode}_ABC`,
+						`Contest`,
+						vscode.TreeItemCollapsibleState.None,
+						id,
+						"Past",
+						"contestDetail"
+					);
+					if (currcontest && currcontest.explorerId) {
+						createProblemFolder(id, "Sol", problemCode);
+						// createContestFolders(currcontest.explorerId, currcontest.label);
+					}
 					let problem: ProblemData = {};
 					const puppet = new Puppet();
 					if (problemLink !== undefined) {
@@ -165,10 +199,10 @@ export function activate(context: vscode.ExtensionContext) {
 			try {
 				console.log(vscode.window.activeTextEditor?.document.fileName);
 				var fileName = vscode.window.activeTextEditor?.document.fileName;
-				var newString="";
+				var newString = "";
 				if (fileName) {
 					for (var i = fileName.length - 1; i >= 0; i--) {
-						if (fileName[i]==='\\') {
+						if (fileName[i] === '\\') {
 							break;
 						}
 						newString = fileName[i] + newString;
@@ -179,25 +213,25 @@ export function activate(context: vscode.ExtensionContext) {
 				var problemCode = "";
 				if (newString) {
 					var count1 = 0;
-					
+
 					for (var i = 0; i < newString.length; i++) {
-						if (newString[i]=='_' && count1 == 0){
-                            count1 += 1;
+						if (newString[i] == '_' && count1 == 0) {
+							count1 += 1;
 							continue;
 						}
-						else if (newString[i]=='_'){
-                            break;
+						else if (newString[i] == '_') {
+							break;
 						}
-						if(count1 == 0) {
-							problemCode = problemCode+newString[i];
+						if (count1 == 0) {
+							problemCode = problemCode + newString[i];
 						}
-						else{
-							contestCode = contestCode+newString[i];
+						else {
+							contestCode = contestCode + newString[i];
 						}
-						
+
 					}
 				}
-				var prob = "https://codeforces.com/contest/"+contestCode+"/problem/"+problemCode;
+				var prob = "https://codeforces.com/contest/" + contestCode + "/problem/" + problemCode;
 
 				console.log(prob);
 				const problemLink = prob;
@@ -213,13 +247,62 @@ export function activate(context: vscode.ExtensionContext) {
 				console.log(error);
 			}
 		})
-	
+
+	const submitProblem = vscode.commands.registerCommand(
+		'cfExtension.submitproblem',
+		async (node: any) => {
+			console.log("Submit.....");
+			var fileName = vscode.window.activeTextEditor?.document.fileName;
+			var newString = "";
+			if (fileName) {
+				for (var i = fileName.length - 1; i >= 0; i--) {
+					if (fileName[i] === '\\') {
+						break;
+					}
+					newString = fileName[i] + newString;
+				}
+			}
+			console.log(newString);
+			var contestCode = "";
+			var problemCode = "";
+			if (newString) {
+				var count1 = 0;
+
+				for (var i = 0; i < newString.length; i++) {
+					if (newString[i] == '_' && count1 == 0) {
+						count1 += 1;
+						continue;
+					}
+					else if (newString[i] == '_') {
+						break;
+					}
+					if (count1 == 0) {
+						problemCode = problemCode + newString[i];
+					}
+					else {
+						contestCode = contestCode + newString[i];
+					}
+
+				}
+			}
+			// const detail = getContestId(node);
+			if (!contestCode || !problemCode) {
+				vscode.window.showErrorMessage(
+					"File does not belong to codeforces contest"
+				);
+				return;
+			}
+			await submitSolution(Number(contestCode), problemCode);
+			// contestsProvider.refresh();
+		})
+
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(loginCommand);
 	context.subscriptions.push(logoutCommand);
 	context.subscriptions.push(fetchProblem);
 	context.subscriptions.push(fetchContest);
 	context.subscriptions.push(showProblem);
+	context.subscriptions.push(submitProblem);
 }
 
 export function deactivate() { }
