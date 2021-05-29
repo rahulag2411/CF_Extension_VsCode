@@ -122,13 +122,13 @@ function getProblemTestCase(problem: any) {
         };
       });
 
-      storeTestCases(problem, testCases);
+      storeTestCases(problem, testCases, contestCode);
     })
     .catch((err: any) => handleError("Failed to get testcases"));
 }
 
-async function storeTestCases(problem: any, testCases: any) {
-  const problemLabel = `${problem.id}_${problem.name}`;
+async function storeTestCases(problem: any, testCases: any, contestCode: any) {
+  const problemLabel = `${problem.id}_${contestCode}_${problem.name}`;
   const problemDir = join(dir, problemLabel);
 
   let templateFile = getTemplateFile();
@@ -138,6 +138,7 @@ async function storeTestCases(problem: any, testCases: any) {
   }
 
   FileHandler.createDir(problemDir);
+  FileHandler.createFile(join(problemDir, problemLabel + ".cpp"), "");
   FileHandler.createDir(join(problemDir, "input"));
   FileHandler.createDir(join(problemDir, "output"));
   FileHandler.createDir(join(problemDir, "codeOutput"));

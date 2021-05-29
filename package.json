@@ -14,10 +14,20 @@
 		"onCommand:cfExtension.login",
 		"onCommand:cfExtension.logout",
 		"onCommand:cfExtension.fetchProblem",
-		"onCommand:cfExtension.fetchContest"
+		"onCommand:cfExtension.fetchContest",
+		"onCommand:cfExtension.showproblem"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"menus": {
+			"editor/title": [
+				{
+					"when": "resourceScheme == file && resourceExtname == .cpp",
+					"command": "cfExtension.showproblem",
+					"group": "navigation"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "cfExtension.helloWorld",
@@ -38,6 +48,10 @@
 			{
 				"command": "cfExtension.fetchContest",
 				"title": "Contest-url"
+			},
+			{
+				"command": "cfExtension.showproblem",
+				"title": "Show Problem"
 			}
 		]
 	},
