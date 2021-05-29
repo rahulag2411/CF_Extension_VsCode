@@ -5,6 +5,8 @@ import { login, logout } from './component/login';
 import { ProblemData } from "./interface/problemData";
 import { Puppet } from './utility/extractProblemData';
 import { CodeforcesDataProvider } from './component/showProblem';
+import { Explorer } from './component/explorer';
+import { createContestFolders } from './utility/createContestFolder';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -131,23 +133,42 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.showInputBox({
 					placeHolder: "Contest link",
 					prompt: "Enter Contest link",
-					validateInput: (problemLink) => {
-						return problemLink !== null &&
-							problemLink !== undefined &&
-							problemLink !== ""
+					validateInput: (contestLink) => {
+						return contestLink !== null &&
+							contestLink !== undefined &&
+							contestLink !== ""
 							? null
 							: "Contest link can not be empty";
 					},
-				}).then(async (problemLink) => {
-					let problem: ProblemData = {};
-					const puppet = new Puppet();
-					if (problemLink !== undefined) {
-						problem = await puppet.extractProblemData(problemLink);
-						console.log(problem);
-						const codeForcesDisplay = new CodeforcesDataProvider();
-						await codeForcesDisplay.displaySelectedProblemInView(problem);
+				}).then((contestLink) => {
+					const id = Number(contestLink);
+					const currcontest = new Explorer(
+						`${contestLink}_ABC`,
+						`Contest`,
+						vscode.TreeItemCollapsibleState.None,
+						id,
+						"Past",
+						"contestDetail"
+					);
+					if (currcontest && currcontest.explorerId) {
+						createContestFolders(currcontest.explorerId, currcontest.label);
 					}
+					// console.log(contestLink);
 
+					// (node: Explorer) => {
+					// 	console.log("AAAAAAAAA------------AAAAAAAA");
+					// 	console.log(node);
+					// 	console.log("BBBBBBBBB------------AAAAAAAA");
+
+					// };
+
+					// (node: Explorer) => {
+					// 	console.log("Explorer.....");
+					// 	console.log(node);
+					// 	if (node && node.explorerId) {
+					// 		createContestFolders(node.explorerId, node.label);
+					// 	}
+					// }
 				})
 			} catch (error) {
 				console.log(error);
