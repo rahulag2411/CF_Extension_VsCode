@@ -8,6 +8,7 @@ import axios from "./apiHandler";
 import { getCookie, getCsrfToken, getSubmitCompiler, getUserHandle } from "./data";
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 import { login } from "./../component/login";
+import { checker } from "./checker";
 
 const cheerio = require("cheerio");
 const formData = require("form-data");
@@ -61,9 +62,11 @@ export async function submitSolution(contestIdIn: number, problemIdIn: string) {
                 increment: 10,
             });
             //   const checkerResult = await checker(contestId, problemId);
-            const checkerResult = "abc"
+            
+            const checkerResult = await checker(contestId, problemId);
             progress.report({ message: "Sample testcases checked", increment: 20 });
-
+            console.log("checkerResSubmit--->"+checkerResult);
+            
             let userSelection;
 
             if (!checkerResult) {

@@ -9,6 +9,7 @@ import { Explorer } from './component/explorer';
 import { createContestFolders } from './utility/createContestFolder';
 import { submitSolution } from './utility/submit';
 import { createProblemFolder } from './utility/createProblemFolder';
+import { checker } from './utility/checker';
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -59,8 +60,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 				context.globalState.update("userHandle", userHandle);
 				context.globalState.update("password", password);
-                 var temp = "";
-				const logged = await login().then((cookie) =>{
+				var temp = "";
+				const logged = await login().then((cookie) => {
 					temp = cookie;
 					return cookie;
 				});
@@ -120,18 +121,18 @@ export function activate(context: vscode.ExtensionContext) {
 					// console.log("indexOFcontest"+indexOfContest);
 					var splitted = problemLink?.split("/");
 					// console.log(splitted);
-					var problemCode="";
-					var contestCode="";
+					var problemCode = "";
+					var contestCode = "";
 					if (splitted) {
 						problemCode = splitted[splitted?.length - 1];
-						if (indexOfContest===-1) {
+						if (indexOfContest === -1) {
 							contestCode = splitted[splitted.length - 2];
 						} else {
 							contestCode = splitted[splitted.length - 3];
 						}
 					}
-					console.log("problemCode-->"+problemCode);
-					console.log("contestCode-->"+contestCode);
+					console.log("problemCode-->" + problemCode);
+					console.log("contestCode-->" + contestCode);
 					const id = Number(contestCode);
 					const currcontest = new Explorer(
 						`${contestCode}_ABC`,
@@ -296,12 +297,71 @@ export function activate(context: vscode.ExtensionContext) {
 			// contestsProvider.refresh();
 		})
 
+	const runSampleTest = vscode.commands.registerCommand(
+		'cfExtension.runSample',
+		async (node: any) => {
+			console.log("Testing.....");
+			var fileName = vscode.window.activeTextEditor?.document.fileName;
+			var newString = "";
+			if (fileName) {
+				for (var i = fileName.length - 1; i >= 0; i--) {
+					if (fileName[i] === '\\') {
+						break;
+					}
+					newString = fileName[i] + newString;
+				}
+			}
+			console.log(newString);
+			var contestCode = "";
+			var problemCode = "";
+			if (newString) {
+				var count1 = 0;
+
+				for (var i = 0; i < newString.length; i++) {
+					if (newString[i] == '_' && count1 == 0) {
+						count1 += 1;
+						continue;
+					}
+					else if (newString[i] == '_') {
+						break;
+					}
+					if (count1 == 0) {
+						problemCode = problemCode + newString[i];
+					}
+					else {
+						contestCode = contestCode + newString[i];
+					}
+
+				}
+			}
+			// const detail = getContestId(node);
+			if (!contestCode || !problemCode) {
+				vscode.window.showErrorMessage(
+					"File does not belong to codeforces contest"
+				);
+				return;
+			}
+			const checkerResult = await checker(Number(contestCode), problemCode);
+			console.log("checkerResSubmit--->" + checkerResult);
+
+            if (!checkerResult) {
+                vscode.window.showErrorMessage(
+                    "Solution failed in sample test cases."
+                );
+            } else {
+                vscode.window.showInformationMessage(
+                    "Solution passed in all sample test cases"
+                );
+            }
+		})
+
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(loginCommand);
 	context.subscriptions.push(logoutCommand);
 	context.subscriptions.push(fetchProblem);
 	context.subscriptions.push(fetchContest);
 	context.subscriptions.push(showProblem);
+	context.subscriptions.push(runSampleTest);
 	context.subscriptions.push(submitProblem);
 }
 

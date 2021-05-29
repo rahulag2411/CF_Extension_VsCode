@@ -16,7 +16,8 @@
 		"onCommand:cfExtension.fetchProblem",
 		"onCommand:cfExtension.fetchContest",
 		"onCommand:cfExtension.showproblem",
-		"onCommand:cfExtension.submitproblem"
+		"onCommand:cfExtension.submitproblem",
+		"onCommand:cfExtension.runSample"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -30,6 +31,11 @@
 				{
 					"when": "resourceScheme == file && resourceExtname == .cpp",
 					"command": "cfExtension.submitproblem",
+					"group": "navigation"
+				},
+				{
+					"when": "resourceScheme == file && resourceExtname == .cpp",
+					"command": "cfExtension.runSample",
 					"group": "navigation"
 				}
 			]
@@ -62,6 +68,10 @@
 			{
 				"command": "cfExtension.submitproblem",
 				"title": "Submit Problem"
+			},
+			{
+				"command": "cfExtension.runSample",
+				"title": "Test Sample case"
 			}
 		]
 	},

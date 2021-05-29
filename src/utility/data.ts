@@ -6,7 +6,7 @@ let data = {
   lastUpdate: 1603880554122,
   cookie: null,
   csrfToken: null,
-  compileCommand: "g++-8 --std=c++14",
+  compileCommand: "g++",
   templateFile: "",
   templateLineNo: 0,
   submitCompiler: 54
