@@ -175,17 +175,40 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 				}
 				console.log(newString);
-				
-				
-				// const problemLink = "Sadasd";
-				// let problem: ProblemData = {};
-				// const puppet = new Puppet();
-				// if (problemLink !== undefined) {
-				// 	problem = await puppet.extractProblemData(problemLink);
-				// 	console.log(problem);
-				// 	const codeForcesDisplay = new CodeforcesDataProvider();
-				// 	await codeForcesDisplay.displaySelectedProblemInView(problem);
-				// }
+				var contestCode = "";
+				var problemCode = "";
+				if (newString) {
+					var count1 = 0;
+					
+					for (var i = 0; i < newString.length; i++) {
+						if (newString[i]=='_' && count1 == 0){
+                            count1 += 1;
+							continue;
+						}
+						else if (newString[i]=='_'){
+                            break;
+						}
+						if(count1 == 0) {
+							problemCode = problemCode+newString[i];
+						}
+						else{
+							contestCode = contestCode+newString[i];
+						}
+						
+					}
+				}
+				var prob = "https://codeforces.com/contest/"+contestCode+"/problem/"+problemCode;
+
+				console.log(prob);
+				const problemLink = prob;
+				let problem: ProblemData = {};
+				const puppet = new Puppet();
+				if (problemLink !== undefined) {
+					problem = await puppet.extractProblemData(problemLink);
+					console.log(problem);
+					const codeForcesDisplay = new CodeforcesDataProvider();
+					await codeForcesDisplay.displaySelectedProblemInView(problem);
+				}
 			} catch (error) {
 				console.log(error);
 			}
