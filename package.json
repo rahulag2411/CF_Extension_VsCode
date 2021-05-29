@@ -12,7 +12,9 @@
 	"activationEvents": [
 		"onCommand:cfExtension.helloWorld",
 		"onCommand:cfExtension.login",
-		"onCommand:cfExtension.logout"
+		"onCommand:cfExtension.logout",
+		"onCommand:cfExtension.fetchProblem",
+		"onCommand:cfExtension.fetchContest"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -28,6 +30,14 @@
 			{
 				"command": "cfExtension.logout",
 				"title": "Logout"
+			},
+			{
+				"command": "cfExtension.fetchProblem",
+				"title": "Problem-url"
+			},
+			{
+				"command": "cfExtension.fetchContest",
+				"title": "Contest-url"
 			}
 		]
 	},
@@ -55,6 +65,7 @@
 	"dependencies": {
 		"axios": "^0.21.1",
 		"cheerio": "^1.0.0-rc.9",
+		"puppeteer": "^9.1.1",
 		"querystring": "^0.2.1"
 	}
 }

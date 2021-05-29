@@ -16,24 +16,32 @@ let session = {
 };
 
 async function  logout() {
-  let data: any = getData();
-  let username = data.userHandle();
-  data.cookie = null;
-  data.csrfToken = null;
-  data.userHandle = "";
-  data.password = "";
-  updateData(data);
+  let currData: any = getData();
+  // console.log(currData);
+  let username = currData.handleOrEmail;
+  currData.cookie = null;
+  currData.csrfToken = null;
+  currData.userHandle = "";
+  currData.handleOrEmail = "";
+  currData.password = "";
+  updateData(currData);
+  console.log("------->");
+  console.log(getData());
+  console.log("------->");
+  
   updateLogoutStatus();
   vscode.window.showInformationMessage(`${username} loggedOut Successfully!!!`)
 }
 
 async function login() {
   let data: any = getData();
-
-
+  console.log(data);
   const userHandle = getUserHandle();
 
   if(userHandle === null || userHandle === undefined || userHandle === '') {
+    console.log("ABC");
+    console.log(userHandle);
+    
     handleError("Failed to login user: "+userHandle);
     return '';
   }
@@ -103,11 +111,14 @@ function requestLogin() {
     .then((res: any) => {
       const $ = cheerio.load(res.data);
       const userId = $($(".lang-chooser a")[2]).html();
-
+      // console.log(res.data);
+      
       session.csrfToken = $("meta[name='X-Csrf-Token']")[0].attribs["content"];
 
       if(userId === 'Enter') {
         session.cookie = '';
+        console.log("DEF");
+        console.log("userID"+userId);
         handleError("Failed to login user: "+user.handleOrEmail);
         return;
       }

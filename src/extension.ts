@@ -1,96 +1,164 @@
 import * as vscode from 'vscode';
-import {setStatusBarItem} from './utility/setStatusBar';
+import { setStatusBarItem } from './utility/setStatusBar';
 import * as data from './utility/data';
-import {login,logout} from './component/login';
+import { login, logout } from './component/login';
+import { ProblemData } from "./interface/problemData";
+import { Puppet } from './utility/extractProblemData';
+import { CodeforcesDataProvider } from './component/showProblem';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	
+
 	console.log('Congratulations, your extension "cfExtension" is now active!');
-    let disposable = vscode.commands.registerCommand('cfExtension.helloWorld', () => {
-		
+	let disposable = vscode.commands.registerCommand('cfExtension.helloWorld', () => {
+
 		vscode.window.showInformationMessage('Hello World from cfExtension!');
 	});
 
-     data.setUser(
+	data.setUser(
 		context.globalState.get("userHandle"),
 		context.globalState.get("password")
-	  );
-	
-	
-	
-	  //status bar login status
-	  const loginStatusBarItem = vscode.window.createStatusBarItem(
+	);
+
+
+
+	//status bar login status
+	const loginStatusBarItem = vscode.window.createStatusBarItem(
 		vscode.StatusBarAlignment.Left,
 		1
-	  );
-	  setStatusBarItem(loginStatusBarItem);
-	
-	
-	
-	  //update user and password
-	  const loginCommand = vscode.commands.registerCommand(
+	);
+	setStatusBarItem(loginStatusBarItem);
+
+
+
+	//update user and password
+	const loginCommand = vscode.commands.registerCommand(
 		'cfExtension.login',
 		async () => {
-		  vscode.window.showInputBox({
-			placeHolder: "Enter user",
-			prompt: "Enter user name or Email of Codeforces account",
-			validateInput: (userHandle) => {
-			  return userHandle !== null &&
-				userHandle !== undefined &&
-				userHandle !== ""
-				? null
-				: "User name can not be empty";
-			},
-		  }).then(async (userHandle) =>{
-			const password = await vscode.window.showInputBox({
-			  placeHolder: "Enter password",
-			  prompt: "Enter password of Codeforces account",
-			  password: true,
+			vscode.window.showInputBox({
+				placeHolder: "Enter user",
+				prompt: "Enter user name or Email of Codeforces account",
+				validateInput: (userHandle) => {
+					return userHandle !== null &&
+						userHandle !== undefined &&
+						userHandle !== ""
+						? null
+						: "User name can not be empty";
+				},
+			}).then(async (userHandle) => {
+				const password = await vscode.window.showInputBox({
+					placeHolder: "Enter password",
+					prompt: "Enter password of Codeforces account",
+					password: true,
+				});
+
+				// console.log(userHandle, password);
+
+				context.globalState.update("userHandle", userHandle);
+				context.globalState.update("password", password);
+
+				const logged = await login();
+				console.log(logged);
+				console.log("CSRF Token: " + data.getCsrfToken());
+				if (!logged) {
+					vscode.window.showErrorMessage(
+						"User not logged in."
+					);
+					return;
+				}
+
+				data.setUser(userHandle, password);
+				data.resetCookie();
+
 			});
-	  
-			// console.log(userHandle, password);
-	  
-			context.globalState.update("userHandle", userHandle);
-			context.globalState.update("password", password);
-
-			const logged = await login();
-			console.log(logged);
-			console.log("CSRF Token: "+ data.getCsrfToken());
-			if(!logged) {
-			  vscode.window.showErrorMessage(
-				 "User not logged in."
-			  );
-			  return;
-			}
-	        
-			data.setUser(userHandle, password);
-			data.resetCookie();
-			
-		  }); 
 		}
-	  );
+	);
 
-	  const logoutCommand = vscode.commands.registerCommand(
+	const logoutCommand = vscode.commands.registerCommand(
 		'cfExtension.logout',
 		async () => {
-             if(data.getCsrfToken() == null || data.getUserHandle() == undefined){
-				vscode.window.showErrorMessage(
-					"No user currently logged In."
-				 );
-				 return;
-			 }
-			const loggedOut = await logout();
-			console.log(loggedOut);
+			console.log("LOGOUT")
+			try {
+				if (data.getCsrfToken() == null || data.getUserHandle() == undefined) {
+					vscode.window.showErrorMessage(
+						"No user currently logged In."
+					);
+					return;
+				}
+				const loggedOut = await logout();
+				console.log(loggedOut);
+			} catch (error) {
+				console.log(error);
+			}
+
 
 		})
-	
-	  context.subscriptions.push(disposable);
-	  context.subscriptions.push(loginCommand);
-	  context.subscriptions.push(logoutCommand)
-	}
-	
 
+	const fetchProblem = vscode.commands.registerCommand(
+		'cfExtension.fetchProblem',
+		async () => {
+			try {
+				vscode.window.showInputBox({
+					placeHolder: "problem link",
+					prompt: "Enter problem link",
+					validateInput: (problemLink) => {
+						return problemLink !== null &&
+							problemLink !== undefined &&
+							problemLink !== ""
+							? null
+							: "problem link can not be empty";
+					},
+				}).then(async (problemLink) => {
+					let problem: ProblemData = {};
+					const puppet = new Puppet();
+					if (problemLink !== undefined) {
+						problem = await puppet.extractProblemData(problemLink);
+						console.log(problem);
+						const codeForcesDisplay = new CodeforcesDataProvider();
+						await codeForcesDisplay.displaySelectedProblemInView(problem);
+					}
 
+				})
+			} catch (error) {
+				console.log(error);
+			}
+		})
 
-export function deactivate() {}
+	const fetchContest = vscode.commands.registerCommand(
+		'cfExtension.fetchContest',
+		async () => {
+			try {
+				vscode.window.showInputBox({
+					placeHolder: "Contest link",
+					prompt: "Enter Contest link",
+					validateInput: (problemLink) => {
+						return problemLink !== null &&
+							problemLink !== undefined &&
+							problemLink !== ""
+							? null
+							: "Contest link can not be empty";
+					},
+				}).then(async (problemLink) => {
+					let problem: ProblemData = {};
+					const puppet = new Puppet();
+					if (problemLink !== undefined) {
+						problem = await puppet.extractProblemData(problemLink);
+						console.log(problem);
+						const codeForcesDisplay = new CodeforcesDataProvider();
+						await codeForcesDisplay.displaySelectedProblemInView(problem);
+					}
+
+				})
+			} catch (error) {
+				console.log(error);
+			}
+		})
+
+	context.subscriptions.push(disposable);
+	context.subscriptions.push(loginCommand);
+	context.subscriptions.push(logoutCommand);
+	context.subscriptions.push(fetchProblem);
+	context.subscriptions.push(fetchContest);
+}
+
+export function deactivate() { }
