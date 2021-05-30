@@ -1,70 +1,50 @@
-# cfExtension README
+# CfExtension - Making CF easier
 
-This is the README for your extension "cfExtension". After writing up a brief description, we recommend including the following sections.
+The VS Code extension serves the purpose of making coding on Codeforces easier and smooth while extracting the benefits of working in VS Code. Reading the problem and submitting your solution are just a click away without needing to switch between your browser and IDE.
 
-## Features
+### Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- Clone a single problem or a whole contest with a .cpp file for each question for you to code in
+- With 'show-problem' feature, one can view problem statement simultaneously while coding without a need to switch to browser
+- Test the sample cases and submit the problem in just 1 click
 
-For example if there is an image subfolder under your extension project workspace:
+### Get Started
 
-\!\[feature X\]\(images/feature-x.png\)
+**Logging in:** 
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+1. Open command palette (Ctrl+Shift+P)
+2. Write User login. It will ask for the username/email and password of your codeforces account
+3. Enter the required details and now you are logged in.
 
-## Requirements
+**Fetching a problem:**
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. Open the folder for your CF codes in VS Code. 
+2. In the command palette type Problem-url and enter.
+3. Next, you need to enter the URL of the problem you want to solve.
+4. With this, on the explorer pane the required files will be created.
+5. In the Sol.cpp file you can code your solution.
 
-## Extension Settings
+**Fetching a contest:**
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+1. Open the folder for your CF codes in VS Code. 
+2. In the command palette type Contest-url and enter.
+3. Next, you need to enter the code of the contest (For ex: code for contest URL [https://codeforces.com/contest/1526](https://codeforces.com/contest/1526) is 1526) you want to solve.
+4. With this, on the explorer pane the required files will be created.
+5. In the Sol.cpp file for each problem you can code your solution for the respective problem.
 
-For example:
+**Viewing Problem in VS Code:**
 
-This extension contributes the following settings:
+1. Show problem button on the top right corner allows you to view the problem in split-screen view.
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+**Test Sample Cases:**
 
-## Known Issues
+1. Once done with the coding part, you may proceed to check the sample test cases by clicking on Test Sample case button on top right corner of the window.
+2. The input, expected output and output of your code can be viewed from input0.txt, output0.txt and codeOutput0.txt files in the explorer pane.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+**Submit Problem:**
 
-## Release Notes
+1. Once done with the coding part, you may proceed to submit your code right away (Submit problem button on the top right corner).
 
-Users appreciate release notes as you update your extension.
+**Compiling your code:**
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- You can choose the compiler of C++ which should be used to compile you solution. Additional arguments can also be passed. For example std of C++ (`g++ --std=c++14`).
