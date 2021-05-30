@@ -17,7 +17,8 @@
 		"onCommand:cfExtension.fetchContest",
 		"onCommand:cfExtension.showproblem",
 		"onCommand:cfExtension.submitproblem",
-		"onCommand:cfExtension.runSample"
+		"onCommand:cfExtension.runSample",
+		"onCommand:cfExtension.runningcontest"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -56,6 +57,10 @@
 			{
 				"command": "cfExtension.fetchProblem",
 				"title": "Problem URL"
+			},
+			{
+				"command": "cfExtension.runningcontest",
+				"title": "Get running contests"
 			},
 			{
 				"command": "cfExtension.fetchContest",

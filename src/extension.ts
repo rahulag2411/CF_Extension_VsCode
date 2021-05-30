@@ -11,6 +11,9 @@ import { submitSolution } from './utility/submit';
 import { createProblemFolder } from './utility/createProblemFolder';
 import { checker } from './utility/checker';
 
+const axios = require('axios');
+const baseURL = "https://codeforces.com";
+
 export function activate(context: vscode.ExtensionContext) {
 
 	console.log('Congratulations, your extension "cfExtension" is now active!');
@@ -191,52 +194,66 @@ export function activate(context: vscode.ExtensionContext) {
 		'cfExtension.showproblem',
 		async () => {
 			try {
-				console.log(vscode.window.activeTextEditor?.document.fileName);
-				var fileName = vscode.window.activeTextEditor?.document.fileName;
-				var newString = "";
-				if (fileName) {
-					for (var i = fileName.length - 1; i >= 0; i--) {
-						if (fileName[i] === '\\') {
-							break;
+				await vscode.window.withProgress({
+					location: vscode.ProgressLocation.Notification,
+					title: `Showing Problem`,
+					cancellable: false,
+				}, async (progress) => {
+					progress.report({
+						message: "Requesting codeforces",
+						increment: 10
+					})
+					console.log(vscode.window.activeTextEditor?.document.fileName);
+					var fileName = vscode.window.activeTextEditor?.document.fileName;
+					var newString = "";
+					if (fileName) {
+						for (var i = fileName.length - 1; i >= 0; i--) {
+							if (fileName[i] === '\\') {
+								break;
+							}
+							newString = fileName[i] + newString;
 						}
-						newString = fileName[i] + newString;
 					}
-				}
-				console.log(newString);
-				var contestCode = "";
-				var problemCode = "";
-				if (newString) {
-					var count1 = 0;
+					console.log(newString);
+					var contestCode = "";
+					var problemCode = "";
+					if (newString) {
+						var count1 = 0;
 
-					for (var i = 0; i < newString.length; i++) {
-						if (newString[i] == '_' && count1 == 0) {
-							count1 += 1;
-							continue;
-						}
-						else if (newString[i] == '_') {
-							break;
-						}
-						if (count1 == 0) {
-							problemCode = problemCode + newString[i];
-						}
-						else {
-							contestCode = contestCode + newString[i];
-						}
+						for (var i = 0; i < newString.length; i++) {
+							if (newString[i] == '_' && count1 == 0) {
+								count1 += 1;
+								continue;
+							}
+							else if (newString[i] == '_') {
+								break;
+							}
+							if (count1 == 0) {
+								problemCode = problemCode + newString[i];
+							}
+							else {
+								contestCode = contestCode + newString[i];
+							}
 
+						}
 					}
-				}
-				var prob = "https://codeforces.com/contest/" + contestCode + "/problem/" + problemCode;
+					var prob = "https://codeforces.com/contest/" + contestCode + "/problem/" + problemCode;
 
-				console.log(prob);
-				const problemLink = prob;
-				let problem: ProblemData = {};
-				const puppet = new Puppet();
-				if (problemLink !== undefined) {
-					problem = await puppet.extractProblemData(problemLink);
-					console.log(problem);
-					const codeForcesDisplay = new CodeforcesDataProvider();
-					await codeForcesDisplay.displaySelectedProblemInView(problem);
-				}
+					console.log(prob);
+					const problemLink = prob;
+					let problem: ProblemData = {};
+					const puppet = new Puppet();
+					if (problemLink !== undefined) {
+						problem = await puppet.extractProblemData(problemLink);
+						console.log(problem);
+						const codeForcesDisplay = new CodeforcesDataProvider();
+						await codeForcesDisplay.displaySelectedProblemInView(problem);
+					}
+					progress.report({
+						message: "Problem fetched successfully",
+						increment: 100
+					})
+				})
 			} catch (error) {
 				console.log(error);
 			}
@@ -337,15 +354,72 @@ export function activate(context: vscode.ExtensionContext) {
 			const checkerResult = await checker(Number(contestCode), problemCode);
 			console.log("checkerResSubmit--->" + checkerResult);
 
-            if (!checkerResult) {
-                vscode.window.showErrorMessage(
-                    "Solution failed in sample test cases."
-                );
-            } else {
-                vscode.window.showInformationMessage(
-                    "Solution passed in all sample test cases"
-                );
-            }
+			if (!checkerResult) {
+				vscode.window.showErrorMessage(
+					"Solution failed in sample test cases."
+				);
+			} else {
+				vscode.window.showInformationMessage(
+					"Solution passed in all sample test cases"
+				);
+			}
+		})
+
+	const getRunningContests = vscode.commands.registerCommand(
+		'cfExtension.runningcontest',
+		async (node: any) => {
+			const URL = "/api/contest.list";
+			const res = await axios.get(baseURL + URL)
+			console.log("data" + res.data);
+
+			const allContests = res.data["result"];
+			console.log(allContests);
+
+			var arr = [];
+			for (let index = 0; index < allContests.length; index++) {
+				const element = allContests[index];
+				if (element.phase === 'CODING') {
+					arr.push(element);
+				}
+			}
+			console.log(arr);
+			const contestTOshow = arr.map((contest) => {
+				return {
+					label: contest.name,
+					detail: contest.id
+				}
+			})
+			console.log(contestTOshow);
+
+			console.log(contestTOshow);
+			const abc = [];
+			for (let index = 0; index < contestTOshow.length; index++) {
+				const element = contestTOshow[index];
+				let te = element.label + ". Contest code: " + element.detail;
+				abc.push(te);
+			}
+			console.log(abc);
+
+			const shownContest = await vscode.window.showQuickPick(abc)
+			console.log(shownContest);
+			var splitted = shownContest?.split(" ");
+			var contestCode = ""
+			if (splitted) {
+				contestCode = splitted[splitted?.length - 1];
+			}
+			console.log(Number(contestCode));
+			const id = Number(contestCode);
+			const currcontest = new Explorer(
+				`${contestCode}_ABC`,
+				`Contest`,
+				vscode.TreeItemCollapsibleState.None,
+				id,
+				"Past",
+				"contestDetail"
+			);
+			if (currcontest && currcontest.explorerId) {
+				createContestFolders(currcontest.explorerId, currcontest.label);
+			}
 		})
 
 	context.subscriptions.push(disposable);
@@ -356,6 +430,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(showProblem);
 	context.subscriptions.push(runSampleTest);
 	context.subscriptions.push(submitProblem);
+	context.subscriptions.push(getRunningContests);
 }
 
 export function deactivate() { }
