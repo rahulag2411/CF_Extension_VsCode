@@ -11,7 +11,7 @@ export class CodeforcesDataProvider{
     displaySelectedProblemInView = async (currInpProblem:ProblemData):Promise<void> => {
         const panel = vscode.window.createWebviewPanel(
             'codeforces',
-            "currInpProblem",
+            "Problem",
             vscode.ViewColumn.Beside,
             {
                 enableScripts: true
@@ -27,7 +27,7 @@ export class CodeforcesDataProvider{
     
         const parseProblem = async (currProblem:ProblemData):Promise<string> => {
             const problem:ProblemData = currProblem;
-            
+            console.log(problem.sampleTests)
             return `
             <!DOCTYPE html>
                 <html>

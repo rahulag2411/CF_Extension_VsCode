@@ -55,23 +55,35 @@
 			},
 			{
 				"command": "cfExtension.fetchProblem",
-				"title": "Problem-url"
+				"title": "Problem URL"
 			},
 			{
 				"command": "cfExtension.fetchContest",
-				"title": "Contest-url"
+				"title": "Contest Code"
 			},
 			{
 				"command": "cfExtension.showproblem",
-				"title": "Show Problem"
+				"title": "Show Problem",
+				"icon": {
+					"light": "static/eye.svg",
+					"dark": "static/eye.svg"
+				}
 			},
 			{
 				"command": "cfExtension.submitproblem",
-				"title": "Submit Problem"
+				"title": "Submit Problem",
+				"icon": {
+					"light": "static/telegram.svg",
+					"dark": "static/telegram.svg"
+				}
 			},
 			{
 				"command": "cfExtension.runSample",
-				"title": "Test Sample case"
+				"title": "Test Sample case",
+				"icon": {
+					"light": "static/play.svg",
+					"dark": "static/play.svg"
+				}
 			}
 		]
 	},
@@ -97,6 +109,7 @@
 		"vscode-test": "^1.5.0"
 	},
 	"dependencies": {
+		"@material-ui/core": "^4.11.4",
 		"axios": "^0.21.1",
 		"cheerio": "^1.0.0-rc.9",
 		"form-data": "^4.0.0",

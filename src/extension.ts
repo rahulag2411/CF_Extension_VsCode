@@ -56,10 +56,11 @@ export function activate(context: vscode.ExtensionContext) {
 					password: true,
 				});
 
-				// console.log(userHandle, password);
+				console.log(userHandle, password);
 
 				context.globalState.update("userHandle", userHandle);
 				context.globalState.update("password", password);
+				data.setUser(userHandle, password);
 				var temp = "";
 				const logged = await login().then((cookie) => {
 					temp = cookie;
@@ -107,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
 		async () => {
 			try {
 				vscode.window.showInputBox({
-					placeHolder: "problem link",
+					placeHolder: "Problem link. For example - https://codeforces.com/contest/1526/problem/A",
 					prompt: "Enter problem link",
 					validateInput: (problemLink) => {
 						return problemLink !== null &&
@@ -146,14 +147,6 @@ export function activate(context: vscode.ExtensionContext) {
 						createProblemFolder(id, "Sol", problemCode);
 						// createContestFolders(currcontest.explorerId, currcontest.label);
 					}
-					let problem: ProblemData = {};
-					const puppet = new Puppet();
-					if (problemLink !== undefined) {
-						problem = await puppet.extractProblemData(problemLink);
-						console.log(problem);
-						const codeForcesDisplay = new CodeforcesDataProvider();
-						await codeForcesDisplay.displaySelectedProblemInView(problem);
-					}
 
 				})
 			} catch (error) {
@@ -166,8 +159,8 @@ export function activate(context: vscode.ExtensionContext) {
 		async () => {
 			try {
 				vscode.window.showInputBox({
-					placeHolder: "Contest link",
-					prompt: "Enter Contest link",
+					placeHolder: "Contest Code. For Ex - 1526 is contest code of https://codeforces.com/contest/1526",
+					prompt: "Enter Contest Code",
 					validateInput: (contestLink) => {
 						return contestLink !== null &&
 							contestLink !== undefined &&

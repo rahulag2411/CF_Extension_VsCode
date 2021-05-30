@@ -44,7 +44,7 @@ export class Puppet{
             for(let i = 0;i<temp.length;i++){
                 temp[i].parentNode?.removeChild(temp[i]);
             }
-            return document.querySelector("#pageContent > div.problemindexholder > div > div > div.sample-tests")?.innerHTML?.toString().trim();
+            return document.querySelector("#pageContent > div.problemindexholder > div > div > div.sample-tests")?.innerHTML?.toString().trim().split('Copy</div>').join('</div>').split('class="section-title">Examples<').join('class="section-title">Examples<br></br><').split('class="section-title">Example<').join('class="section-title">Example<br></br><');
         });
         problem.note = await page.evaluate(() => {
             let temp = document.querySelectorAll(".MJX_Assistive_MathML");
