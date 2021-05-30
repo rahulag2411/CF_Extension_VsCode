@@ -7,6 +7,7 @@ The VS Code extension serves the purpose of making coding on Codeforces easier a
 - Clone a single problem or a whole contest with a .cpp file for each question for you to code in
 - With 'show-problem' feature, one can view problem statement simultaneously while coding without a need to switch to browser
 - Test the sample cases and submit the problem in just 1 click
+- View all the running contests at a given time and participate in the ones you wish to
 
 ### Get Started
 
@@ -18,7 +19,7 @@ The VS Code extension serves the purpose of making coding on Codeforces easier a
 
 **Fetching a problem:**
 
-1. Open the folder for your CF codes in VS Code. 
+1. IOpen the folder for your CF codes in VS Code. 
 2. In the command palette type Problem-url and enter.
 3. Next, you need to enter the URL of the problem you want to solve.
 4. With this, on the explorer pane the required files will be created.
@@ -31,6 +32,12 @@ The VS Code extension serves the purpose of making coding on Codeforces easier a
 3. Next, you need to enter the code of the contest (For ex: code for contest URL [https://codeforces.com/contest/1526](https://codeforces.com/contest/1526) is 1526) you want to solve.
 4. With this, on the explorer pane the required files will be created.
 5. In the Sol.cpp file for each problem you can code your solution for the respective problem.
+
+ **Get Running Contests:**
+
+1. In the command palette type get-running-contests and enter
+2. A list of currently running contests appears.
+3. Choose the one you wish to participate in and the required files will be created. 
 
 **Viewing Problem in VS Code:**
 
@@ -48,3 +55,7 @@ The VS Code extension serves the purpose of making coding on Codeforces easier a
 **Compiling your code:**
 
 - You can choose the compiler of C++ which should be used to compile you solution. Additional arguments can also be passed. For example std of C++ (`g++ --std=c++14`).
+
+With this you are all set to go!
+
+Happy Coding!
